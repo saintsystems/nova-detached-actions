@@ -1,16 +1,16 @@
 <template>
     <!-- Confirm Action Modal -->
     <component
+        class="text-left"
         v-if="actionModalVisible"
         :show="actionModalVisible"
-        class="text-left"
         :is="selectedAction?.component"
         :working="working"
         :selected-resources="selectedResources"
         :resource-name="resourceName"
         :action="selectedAction"
         :errors="errors"
-        @confirm="runAction"
+        @confirm="executeAction"
         @close="closeConfirmationModal"
     />
 
@@ -20,7 +20,7 @@
         :is="actionResponseData?.modal"
         @confirm="handleResponseModalConfirm"
         @close="handleResponseModalClose"
-        :data="actionResponseData"
+        :data="actionModalReponseData?.payload ?? {}"
     />
 
     <ActionButton
@@ -30,23 +30,33 @@
 </template>
 <script setup>
 import { useActions } from '@/composables/useActions'
+import { computed, nextTick, ref, watch } from 'vue'
 import { useStore } from 'vuex'
-
-const store = useStore()
 
 const emitter = defineEmits(['actionExecuted'])
 
 const props = defineProps({
+    width: { type: String, default: 'auto' },
+    pivotName: { type: String, default: null },
+
     resourceName: {},
     viaResource: {},
     viaResourceId: {},
     viaRelationship: {},
     relationshipType: {},
+    pivotActions: {
+        type: Object,
+        default: () => ({ name: 'Pivot', actions: [] }),
+    },
     actions: { type: Array, default: [] },
     selectedResources: { type: [Array, String], default: () => [] },
     endpoint: { type: String, default: null },
+    triggerDuskAttribute: { type: String, default: null },
 });
 
+const actionSelectionInput = ref('')
+
+const store = useStore()
 
 const {
     errors,
@@ -57,20 +67,37 @@ const {
     closeResponseModal,
     handleActionClick,
     selectedAction,
+    setSelectedActionKey,
+    determineActionStrategy,
     working,
     executeAction,
+    availableActions,
+    availablePivotActions,
     actionResponseData,
 } = useActions(props, emitter, store)
 
-const runAction = () => executeAction(() => emitter('actionExecuted'))
+watch(actionSelectionInput, value => {
+  if (value == '') {
+    return
+  }
 
-const handleResponseModalConfirm = () => {
-    closeResponseModal()
-    emitter('actionExecuted')
-}
+  setSelectedActionKey(value)
+  determineActionStrategy()
 
-const handleResponseModalClose = () => {
-    closeResponseModal()
-    emitter('actionExecuted')
-}
+  nextTick(() => (actionSelectionInput.value = ''))
+})
+
+const actionSelectionOptions = computed(() => [
+  ...availableActions.value.map(a => ({
+    value: a.uriKey,
+    label: a.name,
+    disabled: a.authorizedToRun === false,
+  })),
+  ...availablePivotActions.value.map(a => ({
+    group: props.pivotName,
+    value: a.uriKey,
+    label: a.name,
+    disabled: a.authorizedToRun === false,
+  })),
+])
 </script>

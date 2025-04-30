@@ -160,7 +160,7 @@ shadow ring-primary-200 dark:ring-gray-600 bg-primary-500 hover:bg-primary-400 d
 
 ### Adding an icon
 
-You can use any of the [104 Heroicon icons](https://v1.heroicons.com/) by specifying the icon name in lowercase:
+You can use any of the [Heroicon icons](https://heroicons.com/) by specifying the icon name in lowercase:
 
 ```php
 return [
