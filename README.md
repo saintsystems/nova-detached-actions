@@ -172,7 +172,7 @@ You can also customize the display of that icon using `iconClasses`:
 
 ```php
 return [
-   (new ImportUsers)->icon('upload')->iconClasses('mr-3 -ml-2')
+   (new ImportUsers)->icon('arrow-up-tray')->iconClasses('mr-3 -ml-2')
 ];
 ```
 
