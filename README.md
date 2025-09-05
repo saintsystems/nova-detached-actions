@@ -1,16 +1,15 @@
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/datomatic/nova-detached-actions.svg?style=for-the-badge)](https://packagist.org/packages/datomatic/nova-detached-actions)
-[![Total Downloads](https://img.shields.io/packagist/dt/datomatic/nova-detached-actions.svg?style=for-the-badge)](https://packagist.org/packages/datomatic/nova-detached-actions)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/saintsystems/nova-detached-actions.svg?style=for-the-badge)](https://packagist.org/packages/saintsystems/nova-detached-actions)
+[![Total Downloads](https://img.shields.io/packagist/dt/saintsystems/nova-detached-actions.svg?style=for-the-badge)](https://packagist.org/packages/saintsystems/nova-detached-actions)
 # Laravel Nova Detached Actions Tool
 
 A Laravel Nova tool to allow for placing actions in the Nova toolbar, detached from the checkbox selection mechanism.
 
-The action is detached from the row selection checkboxes in the resource table, so you will not have a collection of models to iterate over. 
+The action is detached from the row selection checkboxes in the resource table, so you will not have a collection of models to iterate over.
 Detached actions are intended to be independent of the selection in the table.
 
-This is a fork of [gobrightspot/nova-detached-actions](https://github.com/gobrightspot/nova-detached-actions) abandoned repo, i rewrite a lot of part in using vue 3 composition api. 
+This is a fork of [datomatic/nova-detached-actions](https://github.com/datomatic/nova-detached-actions) made to work as a mixin and not override the base ResourceTableToolbar to ensure compatibility with other plugins like `icon-action-toolbar`.
 
 :warning: Pivot actions are not supported and have not been tested.
-
 
 ![actions](branding/actions.jpg)
 
@@ -36,7 +35,7 @@ Create a custom Nova Action file:
 php artisan nova:action ExportUsers
 ```
 
-Instead of extending the `ExportUsers` class with the `Laravel\Nova\Actions\Action` class, swap it with the `Datomatic\Nova\Tools\DetachedActions\DetachedAction` class.
+Instead of extending the `ExportUsers` class with the `Laravel\Nova\Actions\Action` class, swap it with the `SaintSystems\Nova\Tools\DetachedActions\DetachedAction` class.
 
 Since we won't receive a collection of `$models`, you can remove the variable from the `handle` method, so that the signature is `public function handle(ActionFields $fields)`.
 
@@ -50,7 +49,7 @@ Here's a full example:
 
 namespace App\Nova\Actions;
 
-use Datomatic\Nova\Tools\DetachedActions\DetachedAction;
+use SaintSystems\Nova\Tools\DetachedActions\DetachedAction;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -60,7 +59,7 @@ use Laravel\Nova\Fields\ActionFields;
 class ExportUsers extends DetachedAction
 {
     use InteractsWithQueue, Queueable, SerializesModels;
-    
+
     public function name(): string
     {
         return __('Export Users');
@@ -104,7 +103,7 @@ Register the action on your resource:
 public function actions(NovaRequest $request)
 {
     return [
-        new App\Nova\Actions\ExportUsers // or App\Nova\Actions\ExportUsers::make() 
+        new App\Nova\Actions\ExportUsers // or App\Nova\Actions\ExportUsers::make()
     ];
 }
 ```
@@ -177,7 +176,7 @@ return [
 ```
 
 ## Chunking and repetitive calls to the handle()
-If you initiate an action on the background Nova will chunk up the total amount of records and call the `handle()` function of your DetachedAction for each chunk. 
+If you initiate an action on the background Nova will chunk up the total amount of records and call the `handle()` function of your DetachedAction for each chunk.
 This could have unexpected performance impact as the system will perform your action for each chunk of records.
 This happens in the `handleRequest()` function of `\Laravel\Nova\Actions\Action.php`.
 
@@ -197,5 +196,3 @@ public function handleRequest(ActionRequest $request): array
 ## License
 
 The MIT License (MIT). Please see [License File](LICENSE) for more information.
-
-
