@@ -22,7 +22,7 @@ Mobile compatibility
 You can install the package in to a Laravel app that uses [Nova](https://nova.laravel.com) via composer:
 
 ```bash
-composer require datomatic/nova-detached-actions
+composer require saintsystems/nova-detached-actions
 ```
 
 The tool will be automatically registered via the `ToolServiceProvider`
